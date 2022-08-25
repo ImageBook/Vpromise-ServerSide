@@ -48,6 +48,13 @@ async function run() {
             res.send(result);
         })
 
+        // get promise by email
+        app.get('/sent-promises/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { senderEmail: email };
+            const result = await sentPromiseCollection.findOne(query);
+            res.send(result);
+        })
 
     }
     finally {
