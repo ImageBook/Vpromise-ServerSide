@@ -14,10 +14,11 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 // console.log('uri', uri);
 // console.log('client', client);
 
-async function run () {
+async function run() {
     try {
         await client.connect();
         const userCollection = client.db('vpromise-database').collection('users');
+        const sentPromiseCollection = client.db('vpromise-database').collection('sent-promise');
 
         // store users
         app.put('/user/:email', async (req, res) => {
@@ -29,6 +30,21 @@ async function run () {
                 $set: user
             };
             const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
+        // get user by email
+        app.get('/user/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
+
+        // post sent promises
+        app.post('/sent-promises', async (req, res) => {
+            const promise = req.body;
+            const result = await sentPromiseCollection.insertOne(promise);
             res.send(result);
         })
 
