@@ -52,7 +52,15 @@ async function run() {
         app.get('/sent-promises/:email', async (req, res) => {
             const email = req.params.email;
             const query = { senderEmail: email };
-            const result = await sentPromiseCollection.findOne(query);
+            const result = await sentPromiseCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // get promise by phone number
+        app.get('/received-promises/:phone', async (req, res) => {
+            const number = req.params.phone;
+            const query = { receiverContact: number };
+            const result = await sentPromiseCollection.find(query).toArray();
             res.send(result);
         })
 
