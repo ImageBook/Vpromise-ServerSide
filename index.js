@@ -27,6 +27,19 @@ async function run() {
             res.send(result);
         })
 
+        // store users
+        app.put('/user/:number', async (req, res) => {
+            const user = req.body;
+            const phone = req.params.number;
+            const filter = { phone: phone };
+            const options = { upsert: true };
+            const updateDoc = {
+                $set: user
+            };
+            const result = await userCollection.updateOne(filter, updateDoc, options);
+            res.send(result);
+        })
+
         // get logged in user info by phone number
         app.get('/user/:phone', async (req, res) => {
             const phone = req.params.phone;
