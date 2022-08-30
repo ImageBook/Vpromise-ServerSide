@@ -21,25 +21,34 @@ async function run() {
         const sentPromiseCollection = client.db('vpromise-database').collection('sent-promise');
 
         // store users
-        app.put('/user/:email', async (req, res) => {
-            const email = req.params.email;
+        app.post('/user', async (req, res) => {
+            // const email = req.params.email;
+            // const user = req.body;
+            // const filter = { email: email };
+            // const options = { upsert: true };
+            // const updateDoc = {
+            //     $set: user
+            // };
             const user = req.body;
-            const filter = { email: email };
-            const options = { upsert: true };
-            const updateDoc = {
-                $set: user
-            };
-            const result = await userCollection.updateOne(filter, updateDoc, options);
+            const result = await userCollection.insertOne(user);
+            res.send(result);
+        })
+
+        // get logged in user info by phone number
+        app.get('/user/:phone', async (req, res) => {
+            const phone = req.params.phone;
+            const query = { phone: phone };
+            const result = await userCollection.findOne(query);
             res.send(result);
         })
 
         // get user by email
-        app.get('/user/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { email: email };
-            const result = await userCollection.findOne(query);
-            res.send(result);
-        })
+        // app.get('/user/:email', async (req, res) => {
+        //     const email = req.params.email;
+        //     const query = { email: email };
+        //     const result = await userCollection.findOne(query);
+        //     res.send(result);
+        // })
 
         // post sent promises
         app.post('/sent-promises', async (req, res) => {
@@ -49,18 +58,44 @@ async function run() {
         })
 
         // get promise by email
-        app.get('/sent-promises/:email', async (req, res) => {
-            const email = req.params.email;
-            const query = { senderEmail: email };
+        app.get('/sent-promises/:phone', async (req, res) => {
+            const phone = req.params.phone;
+            const query = { senderContact: phone };
             const result = await sentPromiseCollection.find(query).toArray();
             res.send(result);
         })
 
-        // get promise by phone number
+        // get promise by phone number & pending status
         app.get('/received-promises/:phone', async (req, res) => {
             const number = req.params.phone;
-            const query = { receiverContact: number };
+            const query = { receiverContact: number, status: 'Pending' };
             const result = await sentPromiseCollection.find(query).toArray();
+            res.send(result);
+        })
+        // get promise by phone number & accepted status
+        app.get('/received-accepted-promises/:phone', async (req, res) => {
+            const number = req.params.phone;
+            const query = { receiverContact: number, status: 'Accepted' };
+            const result = await sentPromiseCollection.find(query).toArray();
+            res.send(result);
+        })
+        // get promise by phone number & rejected status
+        app.get('/received-rejected-promises/:phone', async (req, res) => {
+            const number = req.params.phone;
+            const query = { receiverContact: number, status: 'Rejected' };
+            const result = await sentPromiseCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // update promise status - accepted/rejected
+        app.patch('/sent-promises/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateInfo = req.body;
+            const filter = { _id: ObjectId(id) };
+            const updateDoc = {
+                $set: updateInfo
+            };
+            const result = await sentPromiseCollection.updateOne(filter, updateDoc);
             res.send(result);
         })
 
