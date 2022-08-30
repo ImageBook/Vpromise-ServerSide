@@ -47,14 +47,6 @@ async function run() {
             res.send(result);
         })
 
-        // get user by email
-        // app.get('/user/:email', async (req, res) => {
-        //     const email = req.params.email;
-        //     const query = { email: email };
-        //     const result = await userCollection.findOne(query);
-        //     res.send(result);
-        // })
-
         // post sent promises
         app.post('/sent-promises', async (req, res) => {
             const promise = req.body;
