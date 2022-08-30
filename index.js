@@ -22,13 +22,6 @@ async function run() {
 
         // store users
         app.post('/user', async (req, res) => {
-            // const email = req.params.email;
-            // const user = req.body;
-            // const filter = { email: email };
-            // const options = { upsert: true };
-            // const updateDoc = {
-            //     $set: user
-            // };
             const user = req.body;
             const result = await userCollection.insertOne(user);
             res.send(result);
@@ -39,6 +32,18 @@ async function run() {
             const phone = req.params.phone;
             const query = { phone: phone };
             const result = await userCollection.findOne(query);
+            res.send(result);
+        })
+
+        // update user info
+        app.patch('/user/:phone', async (req, res) => {
+            const phone = req.params.phone;
+            const query = { phone: phone };
+            const updateInfo = req.body;
+            const updateDoc = {
+                $set: updateInfo
+            };
+            const result = await userCollection.updateOne(query, updateDoc);
             res.send(result);
         })
 
@@ -57,10 +62,18 @@ async function run() {
             res.send(result);
         })
 
-        // get promise by email
+        // get promise by phone
         app.get('/sent-promises/:phone', async (req, res) => {
             const phone = req.params.phone;
             const query = { senderContact: phone };
+            const result = await sentPromiseCollection.find(query).toArray();
+            res.send(result);
+        })
+
+        // get promise by phone
+        app.get('/received-promise/:phone', async (req, res) => {
+            const phone = req.params.phone;
+            const query = { receiverContact: phone };
             const result = await sentPromiseCollection.find(query).toArray();
             res.send(result);
         })
