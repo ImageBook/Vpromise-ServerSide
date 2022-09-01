@@ -27,6 +27,14 @@ async function run() {
             res.send(result);
         })
 
+        // get user by phone number
+        app.get('/user/:number', async (req, res) => {
+            const phone = req.params.number;
+            const query = { phone: phone };
+            const result = await userCollection.findOne(query);
+            res.send(result);
+        })
+
         // store users
         app.put('/user/:number', async (req, res) => {
             const user = req.body;
