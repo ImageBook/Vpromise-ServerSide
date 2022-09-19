@@ -33,6 +33,7 @@ async function run() {
             const phone = req.params.number;
             const query = { phone: phone };
             const result = await userCollection.findOne(query);
+            console.log('result', result);
             res.send(result);
         })
 
